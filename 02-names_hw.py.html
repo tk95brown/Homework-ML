@@ -1,0 +1,274 @@
+
+# coding: utf-8
+
+# **Fin 485**  
+# **Diether**  
+# **Problem Set**  
+# **Intro to Python/Pandas**  
+# 
+# **Overview**
+# 
+# This problem set is designed to introduce you to using Python for empirical analysis. You can discuss this problem set and get coding help from other students in the class. But you must prepare your own answers (i.e., print out your Jupyter notebook). This assignment will be graded based on effort. Do your best, don’t worry if you can’t answer all the questions. We will discuss the problem set in class.
+# 
+# **Turning in the assignment**
+# 
+# Please email me your Jupyter notebook before class.
+# 
+# **General Python Programming**
+# 
+# 1. From *Think Python*. Write a function named `right_justify` that takes a string named `s` as a parameter and prints the string with enough leading spaces so that the last letter of the string is in column 70 of the display.
+# ```python
+# >>> right_justify('monty')
+#                                                                  monty
+# ```
+# Hint: Use string concatenation and repetition. Also, Python provides a built-in function called `len` that returns the length of a string, so the value of `len('monty')` is 5.<br>
+# 
+# **Data Analysis with Python/Pandas**
+# 
+# You can download the data for this problem set here: [U.S. Baby Name Data](http://diether.org/prephd/02-names_1997-2016.csv). There is also a link to the data on the schedule page of *Learning Suite*. The data are names (with at least five occurrences) of babies born in the United States by year from 1997 to 2016. The data are in a csv file. First, read the data into python using Pandas. Use the documentation on the Pandas webpage to help you:
+# 
+# [Pandas Documentation](http://pandas.pydata.org/)
+# 
+# To read the data in Python using Pandas take a look at the `read_csv` command (or how I used it in my Python/Pandas example last class).
+# 
+# **Tasks and Questions**
+# 
+# 1. Print out the first 10 observations of the data.<br><br>
+# 
+# 2. In how many years does the name "Jimmer" show up in the data?<br><br>
+# 
+# 3. In which year was the name "Jennifer" most popular?<br><br>
+# 
+# 4. Compute the number of times the name “Karl” was used as a baby name according to the data (sum of the births over the 20 years). Note, there will be 20 observations for Karl in the data; the number of births named Karl each year. The `births` variable tells you the number of births named Karl for that year.<br><br>
+# 
+# 5. Harder questions: questions 5-7 increase the difficulty. Do your best. Hint, use the `groupby` command. Compute the number of male and female births in the data.<br><br>
+# 
+# 6. Compute the number of male and female names in the data.<br><br>
+# 
+# 7. Compute the number of births by year: 1997–2016.<br><br>
+
+# **General Programming**  
+# **Question 1**
+# 
+# From Think Python. Write a function named right_justify that takes a string named s as a parameter and prints the string with enough leading spaces so that the last letter of the string is in column 70 of the display.
+
+# In[18]:
+
+
+def right_justify(s):
+    s = " " * (70 - len(s)) + s
+    print(s)
+    
+    
+
+
+# In[19]:
+
+
+s = "test"
+right_justify(s)
+
+
+# In[20]:
+
+
+import numpy as np
+import pandas as pd
+
+
+# In[21]:
+
+
+import pandas as pd
+df = pd.read_csv('http://diether.org/prephd/02-names_1997-2016.csv')
+
+
+# **Data Analysis**  
+# **Question 1**
+# 
+# Print out the first 10 observations of the data.
+
+# In[22]:
+
+
+df.head(10)
+
+
+# In[99]:
+
+
+df[0:10]
+
+
+# In[100]:
+
+
+df.tail(10)
+
+
+# **Question 2**
+# 
+# In how many years does the name "Jimmer" show up in the data?
+
+# In[45]:
+
+
+df[df['name']=='Jimmer']
+
+
+# In[44]:
+
+
+print ('Only in the year 2011 did the name \'Jimmer\' appear.' )
+
+
+# In[107]:
+
+
+df.loc[df['name'] == 'Jimmer',] 
+#df.loc[df['name'] == 'Jimmer', 'year'].count()
+# .loc function also helps with rows annnd columns
+
+
+# **Question 3**
+# 
+# In which year was the name "Jennifer" most popular?
+
+# In[42]:
+
+
+df[df['name']=='Jennifer']
+
+
+# In[111]:
+
+
+df.query("name == 'Jennifer'").sort_values("births")
+
+
+# In[113]:
+
+
+df.query("name == 'Jennifer' and sex == 'F'").sort_values("births",ascending=False)
+
+
+# "Jennifer" was most popular in the year 1997
+
+# In[114]:
+
+
+df[(df['name'] == 'Jennifer') & (df['sex'] == 'F')].sort_values('births')
+
+
+# In[117]:
+
+
+get_ipython().run_line_magic('matplotlib', 'inline')
+import matplotlib as plt
+plt.style.use('ggplot')
+
+jen = df.query("name == 'Jennifer' and sex == 'F'")
+jen.plot(y='births',x='year')
+
+
+# **Question 4**
+# 
+# Compute the number of times the name “Karl” was used as a name in the data (sum of the
+# births over the 20 years). Note, that will be 20 observations for Karl. One for each year of the data. The `births` variable tells you the number of births named Karl for that year.
+
+# In[47]:
+
+
+df[df['name'] == 'Karl'].sum()
+
+
+# There are 5308 births attributed to the name "Karl" over the 20 year period.
+
+# In[118]:
+
+
+df.loc[df['name'] == 'Karl','births'].sum()
+
+
+# **Question 5**
+# 
+# Compute the number of male and female births in the data.
+
+# In[52]:
+
+
+df[df['sex'] == 'M'].sum()
+#df[df['sex'] == 'F']
+
+
+# In[121]:
+
+
+df.groupby('sex')[['births']].sum()
+
+
+# In[123]:
+
+
+df[df['sex'] == 'F'].sum()
+
+
+# There were 38915049 male births and 36057581 female births
+
+# **Question 6**
+# 
+# Compute the number of male and female names in the data.
+
+# In[74]:
+
+
+df[df['sex'] == 'F'].count()
+
+
+# In[124]:
+
+
+df.groupby('sex')[['name']].count()
+
+
+# In[75]:
+
+
+df[df['sex'] == 'M'].count()
+
+
+# In[87]:
+
+
+df[df['sex'] == 'M'].name.unique().size
+
+
+# In[88]:
+
+
+df[df['sex'] == 'F'].name.unique().size
+
+
+# There are 30485 unique male names and 44740 unique female names.
+
+# **Question 7**
+# 
+# Compute the number of births by year: 1997–2016.
+
+# In[98]:
+
+
+for x in range(1997, 2017):
+    print("Year: ") 
+    print(x)
+    print(df[df['year'] == x].count())
+    print("\n")
+
+
+# In[125]:
+
+
+df.groupby(['year','sex'])[['births']].sum()
+
+
+# The births by year are listed above.
